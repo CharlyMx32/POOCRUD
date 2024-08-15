@@ -19,6 +19,7 @@ class recepcionistaAsignacionLinea extends Models
     {
         parent::__construct();
     }
+
     // Método data que será llamado por el router
     public function data($filters)
     {
@@ -49,8 +50,8 @@ FROM
     LEFT JOIN persona pt ON e.id_persona = pt.id_persona
     LEFT JOIN detalle_asignacion_linea dal ON al.id_asignacion_linea = dal.id_asignacion_linea
 WHERE  
-    COALESCE(CONCAT(pt.nombre, ' ', COALESCE(pt.apellido_paterno, ''), ' ', COALESCE(pt.apellido_materno, '')), 'Sin Asignar') = 'Sin Asignar';
-
+    COALESCE(CONCAT(pt.nombre, ' ', COALESCE(pt.apellido_paterno, ''), ' ', COALESCE(pt.apellido_materno, '')), 'Sin Asignar') = 'Sin Asignar'
+    AND oc.asistencia = 'Si';
 
             ";
 
@@ -75,7 +76,7 @@ WHERE
             $stmt->execute();
             $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-
+            // Devuelve los resultados como JSON
             header('Content-Type: application/json');
             echo json_encode($results);
 
@@ -86,4 +87,3 @@ WHERE
         }
     }
 }
-

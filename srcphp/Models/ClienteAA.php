@@ -3,7 +3,7 @@
 namespace proyecto\Models; // Cambia esto si el espacio de nombres es diferente
 use Exception;
 use PDO;
-class ClienteAA extends Models
+class ClienteAA extends models
 {
 
     protected $filleable = [

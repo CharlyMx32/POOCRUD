@@ -9,7 +9,7 @@ use proyecto\Auth;
 
 class ClienteCitasController
 {
-    // Función existente para obtener todas las citas del cliente
+    
     public function obtenerCitasCliente()
     {
         try {
@@ -94,35 +94,37 @@ LIMIT 0, 1000;
             }
 
             $query = "
-                SELECT 
-                    oc.producto,
-                    oc.problema,
-                    CONCAT(p.nombre, ' ', p.apellido_paterno, ' ', p.apellido_materno) AS nombre_tecnico,
-                    dal.costo_chequeo,
-                    dal.costo_reparacion,
-                    (dal.costo_chequeo + dal.costo_reparacion) AS total,
-                    dal.seguimiento,
-                    dal.entregado,
-                    dal.tiempo_garantia,
-                    dal.diagnostico_linea,
-                    dal.uso_garantia,
-                    dal.estado_del_pago
-                FROM 
-                    orden_cita oc
-                JOIN 
-                    asignacion_linea al ON oc.id_orden_cita = al.id_orden_cita
-                JOIN 
-                    detalle_asignacion_linea dal ON al.id_asignacion_linea = dal.id_asignacion_linea
-                JOIN 
-                    tecnico t ON al.id_tecnico = t.id_tecnico
-                JOIN 
-                    empleado e ON t.id_empleado = e.id_empleado
-                JOIN 
-                    persona p ON e.id_persona = p.id_persona
-                WHERE
-                    oc.id_cliente = :id_cliente
-                    AND dal.seguimiento <> 'Completado' 
-                    AND dal.estado_del_pago <> 'Pendiente';
+              SELECT 
+    oc.producto,
+    oc.problema,
+    CONCAT(p.nombre, ' ', p.apellido_paterno, ' ', p.apellido_materno) AS nombre_tecnico,
+    dal.costo_chequeo,
+    dal.costo_reparacion,
+    (dal.costo_chequeo + dal.costo_reparacion) AS total,
+    dal.seguimiento,
+    dal.entregado,
+    dal.tiempo_garantia,
+    dal.diagnostico_linea,
+    dal.uso_garantia,
+    dal.estado_del_pago
+FROM 
+    orden_cita oc
+JOIN 
+    asignacion_linea al ON oc.id_orden_cita = al.id_orden_cita
+JOIN 
+    detalle_asignacion_linea dal ON al.id_asignacion_linea = dal.id_asignacion_linea
+JOIN 
+    tecnico t ON al.id_tecnico = t.id_tecnico
+JOIN 
+    empleado e ON t.id_empleado = e.id_empleado
+JOIN 
+    persona p ON e.id_persona = p.id_persona
+WHERE
+    oc.id_cliente = :id_cliente
+    AND dal.seguimiento <> 'Completado' 
+    AND dal.estado_del_pago <> 'Pendiente'
+    AND dal.estado_del_pago <> 'Rechazado';
+            
             ";
 
             $citas = Table::query($query, ['id_cliente' => $clienteId]);

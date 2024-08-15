@@ -27,27 +27,25 @@ class recepcionistaAsignacionFisica extends Models
             $date = !empty($date) ? $date : '';
 
             $sql = "
-    SELECT * FROM (
-        SELECT 
-            o_f.fecha, 
-            o_f.producto, 
-            o_f.problema,
-            o_f.id_orden_fisica,
-            CONCAT(o_f.nombre, ' ', COALESCE(o_f.apellido_paterno, ''), ' ', COALESCE(o_f.apellido_materno, '')) AS nombre_cliente,
-            o_f.contacto AS contacto_cliente,
-            CONCAT(pr.nombre, ' ', COALESCE(pr.apellido_paterno, ''), ' ', COALESCE(pr.apellido_materno, '')) AS nombre_recepcionista,
-            COALESCE(CONCAT(pt.nombre, ' ', COALESCE(pt.apellido_paterno, ''), ' ', COALESCE(pt.apellido_materno, '')), 'Sin Asignar') AS nombre_tecnico,
-            COALESCE(daf.estado, 'Sin Asignar') AS estatus_asignacion
-        FROM orden_fisica o_f
-        LEFT JOIN asignacion_fisica af ON o_f.id_orden_fisica = af.id_orden_fisica
-        LEFT JOIN detalle_asignacion_fisica daf ON af.id_asignacion_fisica = daf.id_asignacion_fisica
-        LEFT JOIN empleado e ON o_f.id_empleado = e.id_empleado
-        LEFT JOIN persona pr ON e.id_persona = pr.id_persona
-        LEFT JOIN tecnico t ON af.id_tecnico = t.id_tecnico
-        LEFT JOIN empleado te ON t.id_empleado = te.id_empleado
-        LEFT JOIN persona pt ON te.id_persona = pt.id_persona
-    ) AS subquery
-    WHERE nombre_tecnico = 'Sin Asignar'
+   SELECT * FROM (
+    SELECT 
+        o_f.fecha, 
+        o_f.producto, 
+        o_f.problema,
+        o_f.id_orden_fisica,
+        CONCAT(o_f.nombre, ' ', COALESCE(o_f.apellido_paterno, ''), ' ', COALESCE(o_f.apellido_materno, '')) AS nombre_cliente,
+        o_f.contacto AS contacto_cliente,
+        COALESCE(CONCAT(pt.nombre, ' ', COALESCE(pt.apellido_paterno, ''), ' ', COALESCE(pt.apellido_materno, '')), 'Sin Asignar') AS nombre_tecnico,
+        COALESCE(daf.estado, 'Sin Asignar') AS estatus_asignacion
+    FROM orden_fisica o_f
+    LEFT JOIN asignacion_fisica af ON o_f.id_orden_fisica = af.id_orden_fisica
+    LEFT JOIN detalle_asignacion_fisica daf ON af.id_asignacion_fisica = daf.id_asignacion_fisica
+    LEFT JOIN tecnico t ON af.id_tecnico = t.id_tecnico
+    LEFT JOIN empleado te ON t.id_empleado = te.id_empleado
+    LEFT JOIN persona pt ON te.id_persona = pt.id_persona
+) AS subquery
+WHERE nombre_tecnico = 'Sin Asignar';
+
             ";
 
 
