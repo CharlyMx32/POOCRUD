@@ -3,7 +3,7 @@ namespace proyecto\Models;
 use PDO;
 use Exception;
 
-class cC extends Models
+class recepcionistaCitasLineaP extends Models
 {
     public function __construct()
     {
@@ -16,40 +16,23 @@ class cC extends Models
             $clientName = $filterss['client_name'] ?? '';
 
             $sql = "
-                SELECT 
-    'Linea' AS Tipo_Asignacion,
-    CONCAT(p.nombre, ' ', p.apellido_paterno, ' ', p.apellido_materno) AS NombreCliente,
-    oc.producto AS Producto, 
-    dal.uso_garantia AS Uso_Garantia
-FROM 
-    detalle_asignacion_linea dal
-INNER JOIN 
-    asignacion_linea al ON dal.id_asignacion_linea = al.id_asignacion_linea
-INNER JOIN 
-    orden_cita oc ON al.id_orden_cita = oc.id_orden_cita
-INNER JOIN 
-    clientes c ON oc.id_cliente = c.id_cliente
-INNER JOIN 
-    persona p ON c.id_persona = p.id_persona
-
-UNION 
-
-SELECT 
-    'Fisico' AS Tipo_Asignacion,
-    CONCAT(ofi.nombre, ' ', ofi.apellido_paterno, ' ', ofi.apellido_materno) AS NombreCliente,
-    ofi.producto AS Producto,
-    daf.uso_garantia AS Uso_Garantia
-FROM 
-    detalle_asignacion_fisica daf
-INNER JOIN 
-    asignacion_fisica af ON daf.id_asignacion_fisica = af.id_asignacion_fisica
-INNER JOIN 
-    orden_fisica ofi ON af.id_orden_fisica = ofi.id_orden_fisica
-
-
-
-ORDER BY 
-    NombreCliente;
+                    SELECT 
+           CONCAT(p.nombre, ' ', p.apellido_paterno, ' ', p.apellido_materno) AS Nombre_Cliente,
+            oc.fecha_cita AS Fecha,
+            oc.fecha_hora AS Hora,      
+            oc.producto AS Producto
+        FROM 
+            detalle_asignacion_linea dal
+        INNER JOIN 
+            asignacion_linea al ON dal.id_asignacion_linea = al.id_asignacion_linea
+    INNER JOIN 
+            orden_cita oc ON al.id_orden_cita = oc.id_orden_cita
+    INNER JOIN 
+            clientes c ON oc.id_cliente = c.id_cliente
+    INNER JOIN 
+            persona p ON c.id_persona = p.id_persona
+    GROUP BY 
+            p.id_persona, oc.id_orden_cita, dal.id_asignacion_linea;
             ";
 
             if (!empty($clientName)) {

@@ -19,7 +19,6 @@ class recepcionistaAsignacionLinea extends Models
     {
         parent::__construct();
     }
-
     // Método data que será llamado por el router
     public function data($filters)
     {
@@ -76,7 +75,7 @@ WHERE
             $stmt->execute();
             $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-            // Devuelve los resultados como JSON
+
             header('Content-Type: application/json');
             echo json_encode($results);
 
@@ -87,3 +86,4 @@ WHERE
         }
     }
 }
+

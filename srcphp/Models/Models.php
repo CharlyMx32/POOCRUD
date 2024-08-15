@@ -21,6 +21,7 @@
         public function __construct()
         {
             $cc = new  Conexion("hardwaresolutionss", "localhost", "root", "3223");
+
             self::$pdo = $cc->getPDO();
         }
         public function create(array $obj)

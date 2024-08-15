@@ -77,18 +77,26 @@ class Router
     }
 
     public static function headers()
-    {
-        header('Content-Type: application/json');
-        header('Access-Control-Allow-Origin: *');
-        header('Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept');
-        header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
-        header('Access-Control-Allow-Headers: Authorization, Content-Type');
-        header('Access-Control-Allow-Credentials: true');
+{
+    $allowedOrigins = ['http://3.144.221.128/']; // Agrega aquí los orígenes permitidos
+    $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
+
+    if (in_array($origin, $allowedOrigins)) {
+        header('Access-Control-Allow-Origin: ' . $origin);
+    } else {
+        header('Access-Control-Allow-Origin: *'); // Opción más permisiva, usa con precaución
     }
+
+    header('Content-Type: application/json');
+    header('Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept, Authorization');
+    header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
+    header('Access-Control-Allow-Credentials: true');
+}
+
 
     public static function is_token_valid()
     {
-        $secretKey = 'orimar174';
+        $secretKey = 'Carlos3223';
         $jwt = self::getBearerToken();
         try {
             $token = JWT::decode($jwt, new Key($secretKey, 'HS256'));
