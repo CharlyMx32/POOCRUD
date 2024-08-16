@@ -35,6 +35,11 @@ use proyecto\Models\orden_cita;
 use proyecto\Models\TERorden;
 use proyecto\Router;
 
+// ochoa
+use proyecto\Controller\PagoLineaAceptadoController;
+use proyecto\Controller\PagoLineaRechazadoController;
+
+
 // mar 
 use proyecto\Models\recepcionistaCitasLinea;
 use proyecto\Models\recepcionistaCitasFisico;
@@ -56,6 +61,7 @@ require_once __DIR__ . '/../srcphp/Router.php'; // Incluye el archivo del enruta
 // Definir rutas
 Router::post('/AF', [AsignacionFisica::class, "save"]);
 Router::post('/AL', [AsignacionLinea::class, "save"]);
+
 Router::post('/CitasFisicas',[AgendarFisicaController::class, "registro"]);
 Router::get('/ordenCita', [OrdenCita::class, "mostrarOrden"]);
 Router::get('/citasTecnico', [TecnicoCitas::class, 'data']);
@@ -229,3 +235,7 @@ Router::post('/pagofisico', [PagoFisicoController::class, 'pagofisico']);
 Router::post('/garantiafisico', [GarantiaFisicoController::class, 'garantiafisico']);
 Router::post('/entregalinea', [EntregaLineaController::class, 'entregal']);
 Router::post('/entregafisico', [EntregaFisicoController::class, 'entregaf']);
+
+// ochoa
+Router::post('/lineaaceptado', [PagoLineaAceptadoController::class, 'pagolineaaceptado']);
+Router::post('/linearechazado', [PagoLineaRechazadoController::class, 'pagolinearechazado']);
