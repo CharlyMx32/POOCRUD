@@ -12,38 +12,37 @@ class TareasController
     public function obtenerTareasAsignadas()
     {
         try {
-            // Obtener el token y decodificarlo para extraer id_usuario
+            // Obtener los encabezados
             $headers = getallheaders();
+            error_log('Encabezados recibidos: ' . print_r($headers, true)); 
+    
             $authHeader = isset($headers['Authorization']) ? $headers['Authorization'] : null;
-
-            // Inicializar id_usuario en null
-            $tecnicoId = null;
-            
-            if ($authHeader) {
-                // Extraer el token del encabezado
-                $token = str_replace('Bearer ', '', $authHeader);
-                
-                // Verificar y decodificar el token
-                $decodedToken = Auth::verifyToken($token);
-                
-                if ($decodedToken && isset($decodedToken->data->tecnicoId)) {
-                    $tecnicoId = $decodedToken->data->tecnicoId;
-                } else {
-                    throw new \Exception('Token inválido o expirado ', );
-                }
-            } else {
+            if (!$authHeader) {
                 throw new \Exception('Encabezado de autorización no encontrado');
             }
-
-            if (!$tecnicoId) {
-                $error = new Error('Usuario no encontrado en sesión');
-                return $error->send();
+    
+            // Extraer el token del encabezado
+            $token = str_replace('Bearer ', '', $authHeader);
+    
+            // Verificar y decodificar el token
+            $decodedToken = Auth::verifyToken($token);
+            if (!$decodedToken || !isset($decodedToken->data->tecnicoId)) {
+                throw new \Exception('Token inválido o expirado');
             }
-
-            // Consultar las tareas asignadas al técnico basado en id_usuario
+    
+            $tecnicoId = $decodedToken->data->tecnicoId;
+    
+            // Consultar las tareas asignadas al técnico basado en id_tecnico
             $query = "
+              SELECT 
+    id_asignacion, 
+    nombre_cliente,
+    producto,
+    problema,
+    tipo_orden
+FROM (
     SELECT
-        al.id_asignacion_linea,
+        al.id_asignacion_linea AS id_asignacion,
         CONCAT(p.nombre, ' ', p.apellido_paterno) AS nombre_cliente,
         oc.producto,
         oc.problema,
@@ -51,36 +50,60 @@ class TareasController
     FROM
         orden_cita oc
         INNER JOIN asignacion_linea al ON oc.id_orden_cita = al.id_orden_cita
-        INNER JOIN tecnico t ON al.id_tecnico = t.id_tecnico
-        INNER JOIN empleado e ON t.id_empleado = e.id_empleado
-        INNER JOIN persona p ON e.id_persona = p.id_persona
+        INNER JOIN clientes c ON oc.id_cliente = c.id_cliente
+        INNER JOIN persona p ON c.id_persona = p.id_persona
+		INNER JOIN tecnico t ON al.id_tecnico = t.id_tecnico
     WHERE
         t.id_tecnico = :id_tecnico
         AND al.estado = 'activo'
-";
+        AND NOT EXISTS (
+            SELECT 1 
+            FROM detalle_asignacion_linea dal 
+            WHERE dal.id_asignacion_linea = al.id_asignacion_linea
+        )
+    
+    UNION ALL
+    
+    SELECT
+        af.id_asignacion_fisica AS id_asignacion,
+        CONCAT(ofi.nombre, ' ', ofi.apellido_paterno) AS nombre_cliente,
+        ofi.producto,
+        ofi.problema,
+        'Orden Física' AS tipo_orden
+    FROM
+        orden_fisica ofi
+        INNER JOIN asignacion_fisica af ON ofi.id_orden_fisica = af.id_orden_fisica
+		INNER JOIN tecnico t ON af.id_tecnico = t.id_tecnico
+    WHERE
+        t.id_tecnico = :id_tecnico
+        AND NOT EXISTS (
+            SELECT 1 
+            FROM detalle_asignacion_fisica daf 
+            WHERE daf.id_asignacion_fisica = af.id_asignacion_fisica
+        )
+) AS combined;
 
+
+            ";
+    
             // Ejecutar la consulta
-            $tareas = Table::query($query, ['id_tecnico' => $tecnicoId]);
-
-            // Depuración: Verificar el resultado de la consulta
-            error_log('Consulta ejecutada: ' . print_r($query, true));
-            error_log('Parámetros: ' . print_r(['id_tecnico' => $tecnicoId], true));
-            error_log('Resultado de la consulta: ' . print_r($tareas, true));
-
-            // Si no hay tareas asignadas
-            if (empty($tareas)) {
+            $detalles = Table::query($query, ['id_tecnico' => $tecnicoId]);
+    
+            // Log para depuración
+            error_log('Resultado de la consulta: ' . print_r($detalles, true));
+    
+            if (empty($detalles)) {
                 $error = new Error('No se encontraron tareas asignadas para este usuario');
                 return $error->send();
             }
-
-            // Enviar respuesta de éxito con las tareas
-            $success = new Success($tareas);
+    
+            $success = new Success(['tareas' => $detalles]);
             return $success->send();
-
         } catch (\Exception $e) {
-            // Capturar cualquier excepción y devolver un error genérico
+            // Log de error y devolución de respuesta
+            error_log('Error: ' . $e->getMessage());
             $error = new Error('Error al obtener tareas asignadas: ' . $e->getMessage());
             return $error->send();
         }
-    }
+    }    
 }

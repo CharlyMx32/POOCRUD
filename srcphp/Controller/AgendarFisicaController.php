@@ -25,6 +25,8 @@ class AgendarFisicaController
         $contacto = $dataObject->contacto;
         $producto = $dataObject->producto ;
         $problema = $dataObject->problema;
+        
+        
 
         // Llamar al procedimiento almacenado para registrar a la persona
         $query = "CALL AgregarClienteOrdenFisica(
@@ -32,8 +34,9 @@ class AgendarFisicaController
             '$apellido_materno', 
             '$apellido_paterno', 
             '$contacto', 
-            '$problema', 
-            '$producto'
+            '$producto',
+            '$problema'
+            
         )";
 
         $resultados = Table::query($query);

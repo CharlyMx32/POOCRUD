@@ -18,7 +18,7 @@ class Table
     public static function getDataconexion()
     {
         if (self::$pdo === null) {
-            $cc = new Conexion("hardwaresolutionss", "localhost", "root", "3223");
+            $cc = new Conexion("hardwaresolutions", "localhost", "root", "Equipo_1");
             self::$pdo = $cc->getPDO();
         }
         return self::$pdo;

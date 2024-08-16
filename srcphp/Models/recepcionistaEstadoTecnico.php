@@ -32,7 +32,7 @@ SELECT
         ELSE 'Disponible'
     END AS estado
 FROM 
-    tecnico t
+    tecnico t   
 INNER JOIN 
     empleado e ON t.id_empleado = e.id_empleado
 INNER JOIN 

@@ -50,8 +50,8 @@ FROM
     LEFT JOIN persona pt ON e.id_persona = pt.id_persona
     LEFT JOIN detalle_asignacion_linea dal ON al.id_asignacion_linea = dal.id_asignacion_linea
 WHERE  
-    COALESCE(CONCAT(pt.nombre, ' ', COALESCE(pt.apellido_paterno, ''), ' ', COALESCE(pt.apellido_materno, '')), 'Sin Asignar') = 'Sin Asignar';
-
+    COALESCE(CONCAT(pt.nombre, ' ', COALESCE(pt.apellido_paterno, ''), ' ', COALESCE(pt.apellido_materno, '')), 'Sin Asignar') = 'Sin Asignar'
+    AND oc.asistencia = 'Si';
 
             ";
 
