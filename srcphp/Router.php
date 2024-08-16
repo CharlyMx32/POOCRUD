@@ -78,7 +78,7 @@ class Router
 
     public static function headers()
 {
-    $allowedOrigins = ['http://3.144.221.128/']; // Agrega aquí los orígenes permitidos
+    $allowedOrigins = ['http://18.223.212.207/','*']; // Agrega aquí los orígenes permitidos
     $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
 
     if (in_array($origin, $allowedOrigins)) {
